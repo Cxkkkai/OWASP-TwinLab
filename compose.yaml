@@ -1,0 +1,16 @@
+services:
+  twinlab:
+    build: .
+    ports:
+      - "127.0.0.1:5000:5000"
+    environment:
+      FLASK_DEBUG: "0"
+      # The container sees the Docker bridge gateway, while the host-side
+      # published port remains constrained to 127.0.0.1 above.
+      TWINLAB_ALLOW_CONTAINER_PROXY: "1"
+    volumes:
+      - twinlab-instance:/lab/instance
+    restart: "no"
+
+volumes:
+  twinlab-instance:
