@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="workbench-hero" aria-labelledby="workbench-title">
+  <div class="hero-copy">
+    <p class="kicker">TwinShop security assurance</p>
+    <h1 id="workbench-title">Security Regression Workbench</h1>
+    <p class="lead">Exercise the same business operation against vulnerable and controlled TwinShop implementations, then inspect the response, protected state and audit evidence.</p>
+    <ul class="workbench-summary" aria-label="workbench scope">
+      <li><strong>4</strong><span>Deep investigations</span></li>
+      <li><strong>6</strong><span>Compact checks</span></li>
+      <li><strong>4</strong><span>Auditor contracts</span></li>
+    </ul>
+  </div>
+
+  <aside class="run-context" aria-labelledby="run-context-title">
+    <div class="context-heading">
+      <div>
+        <span class="control-label" id="run-context-title">Run context</span>
+        <strong>Customer identity</strong>
+      </div>
+      <span class="context-status">Synthetic</span>
+    </div>
+    <p>Select the server-side identity used by account and administration scenarios.</p>
+    <div class="actor-actions">
+      <form class="inline-action" action="{{ url_for('select_identity', username='alice') }}" method="post">
+        <input type="hidden" name="next" value="{{ url_for('index') }}">
+        <button class="{% if current_actor and current_actor.username == 'alice' %}selected{% else %}secondary{% endif %}" type="submit" aria-pressed="{{ 'true' if current_actor and current_actor.username == 'alice' else 'false' }}">Alice</button>
+      </form>
+      <form class="inline-action" action="{{ url_for('select_identity', username='admin') }}" method="post">
+        <input type="hidden" name="next" value="{{ url_for('index') }}">
+        <button class="{% if current_actor and current_actor.username == 'admin' %}selected{% else %}secondary{% endif %}" type="submit" aria-pressed="{{ 'true' if current_actor and current_actor.username == 'admin' else 'false' }}">Admin</button>
+      </form>
+    </div>
+  </aside>
+</section>
+
+<section class="system-overview" aria-labelledby="system-overview-title">
+  <div class="workbench-section-heading">
+    <div>
+      <p class="section-eyebrow">System under test</p>
+      <h2 id="system-overview-title">One request, two implementations, three evidence planes</h2>
+    </div>
+    <div class="implementation-pair" aria-label="paired target implementations">
+      <span class="pair-vulnerable">Vulnerable</span>
+      <span aria-hidden="true">/</span>
+      <span class="pair-controlled">Controlled</span>
+    </div>
+  </div>
+
+  <div class="plane-flow" aria-label="TwinShop assurance architecture">
+    <article class="system-plane runner-plane">
+      <span class="plane-index" aria-hidden="true">01</span>
+      <p class="plane-label">Attack Runner</p>
+      <h3>Controlled input</h3>
+      <ul class="plane-list">
+        <li>Customer or Admin actor</li>
+        <li>Business request and payload</li>
+        <li>Paired replay</li>
+      </ul>
+    </article>
+
+    <div class="boundary-marker request-boundary" aria-label="untrusted request boundary">
+      <span>Untrusted request</span>
+      <span class="boundary-line" aria-hidden="true"></span>
+    </div>
+
+    <article class="system-plane target-plane">
+      <span class="plane-index" aria-hidden="true">02</span>
+      <p class="plane-label">Target</p>
+      <h3>TwinShop application</h3>
+      <div class="target-components">
+        <div class="target-component">
+          <strong>Accounts &amp; orders</strong>
+          <span>Customer data and session lifecycle</span>
+          <div class="module-badges" aria-label="accounts and orders modules">
+            <a href="{{ url_for('a01.overview') }}" aria-label="A01 Broken Access Control">A01</a>
+            <a href="{{ url_for('a07.overview') }}" aria-label="A07 Authentication Failures">A07</a>
+          </div>
+        </div>
+        <div class="target-component">
+          <strong>Storefront runtime</strong>
+          <span>Error paths and product search</span>
+          <div class="module-badges" aria-label="storefront runtime modules">
+            <a href="{{ url_for('a02.overview') }}" aria-label="A02 Security Misconfiguration">A02</a>
+            <a href="{{ url_for('a05.overview') }}" aria-label="A05 Injection">A05</a>
+          </div>
+        </div>
+        <div class="target-component">
+          <strong>Checkout &amp; Admin</strong>
+          <span>Coupon, price and export decisions</span>
+          <div class="module-badges" aria-label="checkout and administration modules">
+            <a href="{{ url_for('a06.overview') }}" aria-label="A06 Insecure Design">A06</a>
+            <a href="{{ url_for('a08.overview') }}" aria-label="A08 Software or Data Integrity Failures">A08</a>
+            <a href="{{ url_for('a10.overview') }}" aria-label="A10 Mishandling of Exceptional Conditions">A10</a>
+          </div>
+        </div>
+        <div class="target-component">
+          <strong>Platform controls</strong>
+          <span>Build, credentials and telemetry</span>
+          <div class="module-badges" aria-label="platform control modules">
+            <a href="{{ url_for('a03.overview') }}" aria-label="A03 Software Supply Chain Failures">A03</a>
+            <a href="{{ url_for('a04.overview') }}" aria-label="A04 Cryptographic Failures">A04</a>
+            <a href="{{ url_for('a09.overview') }}" aria-label="A09 Security Logging and Alerting Failures">A09</a>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <div class="boundary-marker evidence-boundary" aria-label="evidence boundary">
+      <span>Evidence boundary</span>
+      <span class="boundary-line" aria-hidden="true"></span>
+    </div>
+
+    <article class="system-plane observer-plane">
+      <span class="plane-index" aria-hidden="true">03</span>
+      <p class="plane-label">Observer</p>
+      <h3>Independent evidence</h3>
+      <ul class="plane-list">
+        <li>HTTP outcome</li>
+        <li>Authoritative database state</li>
+        <li>Session and audit events</li>
+      </ul>
+    </article>
+  </div>
+</section>
+
+<section class="auditor-entry" aria-labelledby="auditor-entry-title">
+  <div>
+    <p class="section-eyebrow">HD challenge extension</p>
+    <h2 id="auditor-entry-title">Can a plausible patch survive adversarial verification?</h2>
+    <p>Run a known example that the candidate patch passes, then let bounded contract-guided explorers search for a real counterexample across A05, A07, A01 and A02.</p>
+  </div>
+  <div class="auditor-entry-flow" aria-label="control audit workflow">
+    <span>Baseline pass</span>
+    <i aria-hidden="true">→</i>
+    <span>Counterexample search</span>
+    <i aria-hidden="true">→</i>
+    <span>Regression test</span>
+  </div>
+  <a class="button" href="{{ url_for('auditor.overview') }}">Open Security Control Auditor</a>
+</section>
+
+<section class="assurance-suite" aria-labelledby="assurance-suite-title">
+  <div class="assurance-suite-heading">
+    <div>
+      <p class="section-eyebrow">Executable acceptance matrix</p>
+      <h2 id="assurance-suite-title">Full assurance suite</h2>
+      <p>Run every real vulnerable, controlled and legitimate request. A cell passes only when its recorded security assertion passes.</p>
+    </div>
+    <div class="suite-actions">
+      <button type="button" data-suite-run>Run all 10 checks</button>
+      <button class="secondary" type="button" data-suite-download disabled>Download evidence JSON</button>
+    </div>
+  </div>
+
+  <div class="suite-run-status" role="status" aria-live="polite">
+    <div>
+      <strong data-suite-status>Not run</strong>
+      <span data-suite-run-id>No evidence run has been created.</span>
+    </div>
+    <progress data-suite-progress max="10" value="0">0 of 10 modules</progress>
+  </div>
+
+  <div class="assurance-matrix-shell">
+    <table class="assurance-matrix">
+      <thead>
+        <tr>
+          <th scope="col">OWASP check</th>
+          <th scope="col">Vulnerability<br>reproduced</th>
+          <th scope="col">Control<br>effective</th>
+          <th scope="col">Authoritative<br>state safe</th>
+          <th scope="col">Legitimate use<br>preserved</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for lab in labs %}
+        <tr data-suite-row="{{ lab.id }}">
+          <th scope="row">
+            <a href="{{ url_for(lab.id + '.overview') }}">{{ lab.owasp }}</a>
+            <span>{{ lab.name }}</span>
+          </th>
+          <td data-suite-cell="vulnerability_reproduced"><span class="suite-cell pending">Not run</span></td>
+          <td data-suite-cell="control_effective"><span class="suite-cell pending">Not run</span></td>
+          <td data-suite-cell="authoritative_state_safe"><span class="suite-cell pending">Not run</span></td>
+          <td data-suite-cell="legitimate_use_preserved"><span class="suite-cell pending">Not run</span></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p class="suite-error" data-suite-error role="alert" hidden></p>
+</section>
+
+<section class="investigation-catalogue" aria-labelledby="deep-investigations-title">
+  <div class="workbench-section-heading">
+    <div>
+      <p class="section-eyebrow">Primary demonstrations</p>
+      <h2 id="deep-investigations-title">4 Deep investigations</h2>
+      <p>Editable attack input, paired execution, state evidence and a legitimate-use check.</p>
+    </div>
+    <span class="catalogue-count">Full evidence path</span>
+  </div>
+
+  <div class="deep-grid">
+    {% for lab in labs %}
+      {% if lab.depth == 'Deep' %}
+      <article class="investigation-card">
+        <div class="investigation-meta">
+          <span class="owasp-id">{{ lab.owasp }}</span>
+          <span class="depth deep-depth">Deep</span>
+        </div>
+        <h3>{{ lab.name }}</h3>
+        <p>{{ lab.scenario }}</p>
+        <div class="investigation-path" aria-label="available evidence">
+          <span>Request</span>
+          <span>Response</span>
+          <span>State</span>
+          <span>Control</span>
+        </div>
+        <a class="card-link" href="{{ url_for(lab.id + '.overview') }}">Open investigation <span aria-hidden="true">→</span></a>
+      </article>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<section class="compact-catalogue" aria-labelledby="compact-checks-title">
+  <div class="workbench-section-heading">
+    <div>
+      <p class="section-eyebrow">Supporting coverage</p>
+      <h2 id="compact-checks-title">6 Compact assurance checks</h2>
+      <p>Short paired checks for the remaining OWASP Top 10:2025 categories.</p>
+    </div>
+    <span class="catalogue-count">Focused checks</span>
+  </div>
+
+  <div class="compact-grid">
+    {% for lab in labs %}
+      {% if lab.depth == 'Compact' %}
+      <a class="compact-check" href="{{ url_for(lab.id + '.overview') }}">
+        <span class="compact-id">{{ lab.owasp }}</span>
+        <span class="compact-name">{{ lab.name }}</span>
+        <span class="compact-action">Run check <span aria-hidden="true">→</span></span>
+      </a>
+      {% endif %}
+    {% endfor %}
+  </div>
+</section>
+
+<script id="assurance-suite-manifest" type="application/json">
+{
+  "initial_actor": {{ (current_actor.username if current_actor else none)|tojson }},
+  "modules": [
+    {% for lab in labs %}
+    {
+      "id": {{ lab.id|tojson }},
+      "owasp": {{ lab.owasp|tojson }},
+      "name": {{ lab.name|tojson }},
+      "url": {{ url_for(lab.id + '.overview')|tojson }},
+      "assertions": {{ assurance_assertions[lab.id]|tojson }}
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
+
+{% block scripts %}<script src="{{ url_for('static', filename='assurance-suite.js') }}" defer></script>{% endblock %}

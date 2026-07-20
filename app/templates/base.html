@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="light">
+    <title>{{ title }} · TwinShop Security Workbench</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='lab.css') }}">
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="header-inner">
+        <a class="brand" href="{{ url_for('index') }}">
+          <span class="brand-mark" aria-hidden="true">TS</span>
+          <span class="brand-copy">
+            <strong>TwinShop</strong>
+            <small>Security Regression Workbench</small>
+          </span>
+        </a>
+        <div class="runtime-status" aria-label="lab status">
+          <span class="status-dot" aria-hidden="true"></span>
+          <span>Local only</span>
+          <span class="status-divider" aria-hidden="true"></span>
+          <span>Actor: <strong data-current-actor>{{ current_actor.username if current_actor else 'none' }}</strong></span>
+        </div>
+      </div>
+    </header>
+
+    <div class="safety-banner">
+      Intentionally vulnerable · localhost and synthetic data only · do not expose to a network
+    </div>
+
+    <main>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}<div class="notice" role="status">{{ messages|join(' · ') }}</div>{% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+      <span>TwinShop Security Regression Workbench · OWASP Top 10:2025 · Synthetic data</span>
+      <form action="{{ url_for('reset') }}" method="post">
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <button class="quiet" type="submit">Reset lab data</button>
+      </form>
+    </footer>
+    {% block scripts %}{% endblock %}
+  </body>
+</html>

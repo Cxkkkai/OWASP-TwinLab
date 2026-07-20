@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% block content %}
+<nav class="breadcrumb" aria-label="breadcrumb">
+  <a href="{{ url_for('index') }}">Experiments</a>
+  <span aria-hidden="true">/</span>
+  <a href="{{ url_for(lab.id + '.overview') }}">{{ lab.owasp }}</a>
+  <span aria-hidden="true">/</span>
+  <span>Result</span>
+</nav>
+
+<section class="result-header {{ variant }}">
+  <div>
+    <div class="title-meta">
+      <span class="badge {{ variant }}">{{ 'CONTROLLED' if variant == 'secure' else variant|upper }}</span>
+      <span class="http-status">HTTP {{ http_status }}</span>
+    </div>
+    <p class="kicker">{{ lab.owasp }} · {{ lab.name }}</p>
+    <h1>{{ outcome|capitalize }}</h1>
+  </div>
+  <a class="button secondary" href="{{ url_for(lab.id + '.overview') }}">Back to lab</a>
+</section>
+
+{% if result_highlights %}
+<section class="evidence-card" aria-labelledby="evidence-heading">
+  <div class="section-heading">
+    <div>
+      <h2 id="evidence-heading">Observed output</h2>
+      <p>Values returned by this run.</p>
+    </div>
+  </div>
+  <dl class="evidence-grid">
+    {% for item in result_highlights %}
+      <div>
+        <dt>{{ item.label }}</dt>
+        <dd>{% if item.value is sameas true %}true{% elif item.value is sameas false %}false{% else %}{{ item.value }}{% endif %}</dd>
+      </div>
+    {% endfor %}
+  </dl>
+</section>
+{% endif %}
+
+{% if payload.guided_flow is defined %}
+<section class="flow-card" aria-labelledby="flow-heading">
+  <div class="section-heading">
+    <div>
+      <h2 id="flow-heading">Flow trace</h2>
+      <p>State changes captured by the guided run.</p>
+    </div>
+  </div>
+  <div class="table-wrap">
+    <table class="result-table">
+      <thead><tr><th>Step</th><th>Status</th><th>Observed state</th><th>Outcome</th></tr></thead>
+      <tbody>
+      {% for item in payload.guided_flow %}
+        <tr>
+          <td>{% if item.step is defined %}{{ item.step|replace('_', ' ') }}{% else %}Attempt {{ item.attempt }}{% endif %}</td>
+          <td>{{ item.status|default('—') }}</td>
+          <td>
+            {% if item.failure_event_count is defined %}events={{ item.failure_event_count }}, alerts={{ item.alert_count }}
+            {% elif item.redemption_number is defined %}accepted={{ item.accepted }}, redemption={{ item.redemption_number }}
+            {% elif item.admin_data_returned is defined %}admin data returned={{ item.admin_data_returned }}
+            {% elif item.server_session_revoked is defined %}server session revoked={{ item.server_session_revoked }}
+            {% else %}—{% endif %}
+          </td>
+          <td>{{ item.outcome|default('—') }}</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% if payload.valid_login is defined %}<p class="flow-note">Valid login: HTTP {{ payload.valid_login.status }} · authenticated={{ payload.valid_login.authenticated }}</p>{% endif %}
+</section>
+{% endif %}
+
+<details class="raw-evidence">
+  <summary>Raw response</summary>
+  <pre class="result">{{ payload|tojson(indent=2) }}</pre>
+</details>
+
+<div class="result-actions">
+  <a class="button" href="{{ url_for(lab.id + '.overview') }}">Run another path</a>
+  <a class="text-link" href="{{ url_for('index') }}">All experiments</a>
+</div>
+{% endblock %}

@@ -1,0 +1,344 @@
+{% extends "base.html" %}
+{% set demo = lab_demos[lab.id] %}
+{% set wb = lab_workbench[lab.id] %}
+
+{% macro code_panel(title, variant, excerpt, summary) -%}
+<article class="code-panel {{ variant }}">
+  <header class="code-panel-header">
+    <div>
+      <span class="badge {{ 'vulnerable' if variant == 'vulnerable' else 'secure' }}">{{ title }}</span>
+      <p>{{ summary }}</p>
+    </div>
+    <span class="source-location">{{ excerpt.file }}:{{ excerpt.line }}</span>
+  </header>
+  <div class="source-code" role="region" aria-label="{{ title }} source excerpt" tabindex="0">
+    {% for line in excerpt.lines %}
+    <div class="source-line{% if line.focus %} focus-{{ line.focus }}{% endif %}">
+      <span class="line-number" aria-hidden="true">{{ line.number }}</span>
+      <code>{{ line.text }}</code>
+    </div>
+    {% endfor %}
+  </div>
+</article>
+{%- endmacro %}
+
+{% macro run_card(phase, index, badge_label, heading, description, button_label) -%}
+<article class="run-card {{ phase }}" data-run-card="{{ phase }}">
+  <header class="run-card-header">
+    <span class="run-number">{{ index }}</span>
+    <div>
+      <span class="badge {{ 'vulnerable' if phase == 'vulnerable' else 'secure' }}">{{ badge_label }}</span>
+      <h3>{{ heading }}</h3>
+    </div>
+  </header>
+  <p>{{ description }}</p>
+  <button type="button" data-run-phase="{{ phase }}"{% if phase != 'vulnerable' %} disabled{% endif %}>{{ button_label }}</button>
+  <div class="business-result" data-business-result="{{ phase }}" aria-live="polite">
+    <span class="business-result-label">Target view</span>
+    <p>Run this phase to populate the live TwinShop outcome.</p>
+  </div>
+  <details class="trace-disclosure">
+    <summary>Request, response and observer trace</summary>
+    <div class="run-output" data-run-output="{{ phase }}" aria-live="polite">
+      <p class="output-placeholder">No request has been executed.</p>
+    </div>
+  </details>
+</article>
+{%- endmacro %}
+
+{% block content %}
+<nav class="breadcrumb" aria-label="breadcrumb">
+  <a href="{{ url_for('index') }}">Workbench</a>
+  <span aria-hidden="true">/</span>
+  <span>{{ lab.owasp }}</span>
+</nav>
+
+<section class="module-hero {{ lab.depth|lower }}-module">
+  <div>
+    <div class="title-meta">
+      <span class="owasp-id">{{ lab.owasp }}</span>
+      <span class="depth {{ lab.depth|lower }}-depth">{{ lab.depth }} {{ 'investigation' if lab.depth == 'Deep' else 'check' }}</span>
+      <span class="component-label">{{ wb.component }}</span>
+    </div>
+    <h1>{{ lab.name }}</h1>
+    <p class="lead">{{ lab.scenario }}</p>
+  </div>
+  <div class="module-run-context">
+    <span>Server-side lab identity</span>
+    <strong data-current-actor-display>{{ current_actor.username if current_actor else 'Not selected' }}</strong>
+    <a href="{{ url_for('index') }}">Change on workbench</a>
+  </div>
+</section>
+
+<section class="experiment-contract" aria-label="executable experiment contract">
+  <div><span>Actor capability</span><strong>{{ wb.actor_capability }}</strong></div>
+  <div><span>Protected asset</span><strong>{{ wb.asset }}</strong></div>
+  <div><span>Security invariant</span><strong>{{ wb.invariant }}</strong></div>
+  <div><span>Abuse action</span><strong>{{ wb.abuse_action }}</strong></div>
+</section>
+
+{% if lab.depth == 'Deep' %}
+<section class="twinshop-target" aria-labelledby="target-heading">
+  <div class="workbench-section-heading">
+    <div>
+      <p class="section-eyebrow">System under test</p>
+      <h2 id="target-heading">TwinShop target surface</h2>
+      <p>Business context stays visible; actual results are populated from the live target and observer endpoints.</p>
+    </div>
+    <span class="target-live-indicator"><i aria-hidden="true"></i> Live local target</span>
+  </div>
+
+  <div class="target-surface target-{{ lab.id }}">
+    <div class="shop-window" aria-label="TwinShop business surface">
+      <header class="shop-window-bar">
+        <span class="shop-wordmark">TwinShop</span>
+        <span>{{ 'Alice · Customer' if lab.id == 'a01' else 'Local synthetic storefront' }}</span>
+      </header>
+      {% if lab.id == 'a01' %}
+        <div class="shop-screen">
+          <div><span class="shop-overline">My account</span><h3>Order history</h3></div>
+          <article class="shop-order"><span>#101 · Alice</span><strong>Security Engineering Handbook</strong><small>Open order details</small></article>
+          <p class="shop-hint">The attack keeps Alice's identity and replaces only the requested object ID.</p>
+        </div>
+      {% elif lab.id == 'a02' %}
+        <div class="shop-screen">
+          <div><span class="shop-overline">Customer support</span><h3>Find an order</h3></div>
+          <div class="shop-form-preview"><span>Order reference</span><strong>explode</strong><em>Lookup</em></div>
+          <p class="shop-hint">Customer output and operator evidence are inspected on separate planes.</p>
+        </div>
+      {% elif lab.id == 'a05' %}
+        <div class="shop-screen">
+          <div><span class="shop-overline">Catalogue</span><h3>Search products</h3></div>
+          <div class="shop-search-preview">Search the public catalogue</div>
+          <div class="shop-product-row"><span>Security Engineering Handbook</span><span>Privacy Screen</span><span>USB Data Blocker</span></div>
+        </div>
+      {% elif lab.id == 'a07' %}
+        <div class="shop-screen">
+          <div><span class="shop-overline">Administration</span><h3>Session lifecycle</h3></div>
+          <div class="session-preview"><span>Login</span><span>Logout</span><span>Replay old token</span><span>Fresh / expired / random</span></div>
+          <p class="shop-hint">Only token fingerprints appear in the interface; complete synthetic tokens remain in runner memory.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <aside class="attack-composer" aria-label="attack request composer">
+      <span class="section-eyebrow">Attack runner</span>
+      <h3>Equivalent attack conditions</h3>
+      {% if wb.input %}
+      <label for="attack-input-{{ lab.id }}">{{ wb.input.label }}</label>
+      <input id="attack-input-{{ lab.id }}" data-attack-input name="{{ wb.input.name }}" type="{{ wb.input.type }}" value="{{ wb.input.value }}" autocomplete="off">
+      <p>The current value is applied to both vulnerable and controlled attack phases.</p>
+      {% else %}
+      <div class="fixed-condition"><span>Fixed lifecycle</span><strong>Login → logout → old-token replay → boundary cases</strong></div>
+      <p>The runner captures generated tokens and reuses only the appropriate synthetic token for each decision.</p>
+      {% endif %}
+      <dl class="condition-locks">
+        <div><dt>Fixed</dt><dd>Actor, asset, attacker goal and seeded business state</dd></div>
+        <div><dt>Adapted</dt><dd>Variant route and necessary fresh session or signature material</dd></div>
+      </dl>
+    </aside>
+  </div>
+</section>
+{% endif %}
+
+{% set attack = wb.attack_execution|default(wb.attacker_journey|default({})) %}
+{% set attack_steps = attack.get('steps', []) if attack else [] %}
+<section
+  class="adversary-execution"
+  aria-labelledby="adversary-heading"
+  data-adversary-execution
+  data-phase="vulnerable"
+  data-execution-state="idle"
+>
+  <header class="adversary-execution-header">
+    <div>
+      <p class="section-eyebrow">Adversary execution</p>
+      <h2 id="adversary-heading">Attack path</h2>
+      <p data-attack-objective>{{ attack.get('objective', 'One controlled adversary action, traced from the original request to the security-relevant effect.') }}</p>
+    </div>
+    <div class="adversary-controls">
+      <span class="adversary-status" data-adversary-status>
+        <i aria-hidden="true"></i>
+        <span data-adversary-status-label>Ready</span>
+      </span>
+      <button type="button" data-run-adversary>Execute attack path</button>
+    </div>
+  </header>
+
+  <div class="adversary-hypothesis" data-attack-hypothesis>
+    <span>Attacker hypothesis</span>
+    <strong>{{ attack.get('hypothesis', wb.actor_capability ~ ' The attacker tests whether ' ~ wb.invariant|lower) }}</strong>
+  </div>
+
+  <div class="request-mutation" aria-label="baseline request changed into adversarial request">
+    <article class="mutation-state baseline" data-attack-baseline>
+      <span>Baseline</span>
+      <strong>{{ attack.get('baseline', attack.get('starting_position', 'Start with the permitted request or valid state.')) }}</strong>
+    </article>
+    <div class="mutation-operator" aria-hidden="true">
+      <span>Modify</span>
+      <i>→</i>
+    </div>
+    <article class="mutation-state manipulated" data-attack-manipulation>
+      <span>Manipulation</span>
+      <strong>{{ attack.get('manipulation', wb.abuse_action) }}</strong>
+    </article>
+  </div>
+
+  <div class="adversary-console">
+    <div class="adversary-timeline-shell">
+      <div class="console-label">
+        <span>Execution timeline</span>
+        <code>vulnerable phase</code>
+      </div>
+      {% if attack_steps %}
+      <ol class="adversary-timeline" data-adversary-timeline>
+        {% for step in attack_steps %}
+        {% set step_id = step.get('id', 'step-' ~ loop.index) %}
+        {% set evidence_step = step.get('evidence_step') %}
+        {% set evidence_path = step.get('evidence_path', step.get('evidence', '')) %}
+        <li
+          data-adversary-step="{{ step_id }}"
+          data-step-state="idle"
+          {% if evidence_step %}data-evidence-step="{{ evidence_step }}"{% endif %}
+          {% if evidence_path %}data-evidence-path="{{ evidence_path }}"{% endif %}
+        >
+          <span class="timeline-marker" data-step-state-indicator aria-hidden="true">{{ "%02d"|format(loop.index) }}</span>
+          <div class="timeline-copy">
+            <div>
+              <strong>{{ step.get('label', step.get('title', step_id|replace('_', ' ')|title)) }}</strong>
+              <em data-step-state-label>Queued</em>
+            </div>
+            {% set step_detail = step.get('action', step.get('detail', step.get('description', ''))) %}
+            {% if step_detail %}<p>{{ step_detail }}</p>{% endif %}
+            {% if step.get('expected_signal') %}
+            <span class="expected-signal"><b>Expected signal</b>{{ step.get('expected_signal') }}</span>
+            {% endif %}
+            <output data-step-evidence aria-live="polite">Evidence pending</output>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <div class="adversary-timeline-empty" data-adversary-timeline>
+        <span>Execution trace unavailable</span>
+        <p>This module can still run normally; no attack-step metadata has been registered.</p>
+      </div>
+      {% endif %}
+    </div>
+
+    <aside class="decision-trace" aria-label="security decision and obtained effect">
+      <article class="failed-decision" data-attack-failed-decision>
+        <span>Failed decision</span>
+        <strong>{{ attack.get('failed_decision', attack.get('failed_server_decision', 'The vulnerable implementation accepts the attacker-controlled condition without enforcing the security invariant.')) }}</strong>
+      </article>
+      <article class="obtained-effect" data-attack-obtained-effect>
+        <span>Obtained effect</span>
+        <strong>{{ attack.get('obtained_effect', attack.get('payoff', wb.observed_effect)) }}</strong>
+        <output data-adversary-live-evidence aria-live="polite">Run the path to attach response evidence.</output>
+      </article>
+      <article class="controlled-interception" data-adversary-control-interception>
+        <span>Controlled interception</span>
+        <strong>Same manipulation replayed</strong>
+        <output data-adversary-control-evidence aria-live="polite">Run complete comparison to attach the controlled request, HTTP outcome and interception point.</output>
+      </article>
+    </aside>
+  </div>
+</section>
+
+<section class="experiment-runner {{ lab.depth|lower }}-runner" aria-labelledby="runner-heading">
+  <div class="section-heading runner-heading-row">
+    <div>
+      <p class="section-eyebrow">Executable comparison</p>
+      <h2 id="runner-heading">{{ 'Run the deep investigation' if lab.depth == 'Deep' else 'Run the assurance check' }}</h2>
+      <p>Execute the unsafe behaviour, replay the equivalent attack against the control, then verify intended use.</p>
+    </div>
+    <div class="runner-actions">
+      <button type="button" data-run-all-phases>Run complete comparison</button>
+      <button class="quiet" type="button" data-reset-comparison>Clear</button>
+    </div>
+  </div>
+
+  <section class="comparison-verdict" data-comparison-verdict hidden aria-labelledby="verdict-heading">
+    <div class="verdict-heading">
+      <div>
+        <span class="section-index">RESULT</span>
+        <h3 id="verdict-heading">Executable experiment verdict</h3>
+      </div>
+      <div class="verdict-run-meta">
+        <span data-overall-verdict>Waiting for all four assertions</span>
+        <code data-comparison-run-id></code>
+      </div>
+    </div>
+    <div class="assertion-grid" aria-label="experiment contract assertions">
+      <article data-verdict-assertion="vulnerability_reproduced"><span>01</span><strong>Vulnerability reproduced</strong><em>Pending</em></article>
+      <article data-verdict-assertion="control_effective"><span>02</span><strong>Target control effective</strong><em>Pending</em></article>
+      <article data-verdict-assertion="authoritative_state_safe"><span>03</span><strong>Authoritative state safe</strong><em>Pending</em></article>
+      <article data-verdict-assertion="legitimate_use_preserved"><span>04</span><strong>Legitimate use preserved</strong><em>Pending</em></article>
+    </div>
+    <details class="phase-evidence-summary">
+      <summary>Phase evidence summary</summary>
+      <div class="verdict-grid">
+        <article class="verdict-card vulnerable" data-verdict-phase="vulnerable"></article>
+        <article class="verdict-card controlled" data-verdict-phase="controlled"></article>
+        <article class="verdict-card legitimate" data-verdict-phase="legitimate"></article>
+      </div>
+    </details>
+  </section>
+
+  <div class="runner-grid {{ 'deep-runner-grid' if lab.depth == 'Deep' else 'compact-runner-grid' }}">
+    {{ run_card('vulnerable', '01', 'Vulnerable', 'Execute abuse case', 'Run the defined request against the flawed implementation.', vulnerable_label|default('Run vulnerable attack')) }}
+    {{ run_card('controlled', '02', 'Controlled', 'Replay with control', 'Keep the attack semantics fixed and execute the controlled implementation.', secure_label|default('Replay against control')) }}
+    {{ run_card('legitimate', '03', 'Controlled', 'Verify intended use', 'Use a valid request to prove the control did not break normal behaviour.', legitimate_label|default('Run legitimate check')) }}
+  </div>
+</section>
+
+<details class="implementation-inspector">
+  <summary>
+    <span><small>Implementation inspector</small><strong>Open the exact vulnerable and controlled source difference</strong></span>
+    <em>Source excerpts</em>
+  </summary>
+  <div class="implementation-inspector-body">
+    <div class="request-comparison">
+      <article><span class="request-label vulnerable-text">Vulnerable request</span><pre>{{ demo.request }}</pre></article>
+      <article><span class="request-label controlled-text">Controlled replay</span><pre>{{ demo.replay_request }}</pre></article>
+    </div>
+    <p class="lock-note"><strong>Equivalent-condition rule:</strong> {{ demo.input_lock }}</p>
+    <div class="code-comparison">
+      {{ code_panel('Vulnerable code', 'vulnerable', demo.vulnerable_code, demo.failure) }}
+      {{ code_panel('Controlled code', 'controlled', demo.controlled_code, demo.control) }}
+    </div>
+  </div>
+</details>
+
+<details class="claim-boundary">
+  <summary>Claim boundary</summary>
+  <div>
+    <p><strong>This run supports:</strong> {{ wb.supported_claim }}</p>
+    <p><strong>Not tested:</strong> {{ wb.not_tested }}</p>
+  </div>
+</details>
+
+<nav class="module-nav" aria-label="module navigation">
+  {% if lab.previous_id %}<a href="{{ url_for(lab.previous_id + '.overview') }}">← Previous</a>{% else %}<span></span>{% endif %}
+  <a href="{{ url_for('index') }}">Workbench</a>
+  {% if lab.next_id %}<a href="{{ url_for(lab.next_id + '.overview') }}">Next →</a>{% else %}<span></span>{% endif %}
+</nav>
+
+<script id="lab-runner-config" type="application/json">
+{
+  "lab_id": {{ lab.id|tojson }},
+  "depth": {{ lab.depth|lower|tojson }},
+  "input_control": {% if lab.id == 'a01' %}{"name":"order_id","type":"path","placeholder":"202","target_steps":["vulnerable.attack","controlled.attack"]}{% elif lab.id == 'a02' %}{"name":"lookup_id","type":"query","placeholder":"explode","target_steps":["vulnerable.error","controlled.error"]}{% elif lab.id == 'a05' %}{"name":"search_query","type":"query","placeholder":"%25%27%20OR%201%3D1%20--","target_steps":["vulnerable.attack","controlled.attack"]}{% else %}null{% endif %},
+  "assertions": {{ assurance_assertions[lab.id]|tojson }},
+  "setup": {% if setup_url %}{"url": {{ setup_url|tojson }}, "method": {{ setup_method|default('GET')|tojson }}, "fields": {{ setup_fields|default({})|tojson }}, "actor": "alice"}{% else %}null{% endif %},
+  "runs": {% if runner_runs is defined and runner_runs %}{{ runner_runs|tojson }}{% elif demo.runs is defined %}{{ demo.runs|tojson }}{% else %}{
+    "vulnerable": {"summary_step": "request", "observations": {{ demo.observations.vulnerable|tojson }}, "steps": [{"id": "request", "label": "Send the vulnerable request", "url": {{ vulnerable_url|tojson }}, "method": {{ vulnerable_method|default('GET')|tojson }}, "fields": {{ vulnerable_fields|default({})|tojson }}, "headers": {}, "observations": {{ demo.observations.vulnerable|tojson }}, "capture": {}}]},
+    "controlled": {"summary_step": "request", "observations": {{ demo.observations.controlled|tojson }}, "steps": [{"id": "request", "label": "Replay the equivalent request against the control", "url": {{ secure_url|tojson }}, "method": {{ secure_method|default('GET')|tojson }}, "fields": {{ secure_fields|default({})|tojson }}, "headers": {}, "observations": {{ demo.observations.controlled|tojson }}, "capture": {}}]},
+    "legitimate": {"summary_step": "request", "observations": {{ demo.observations.legitimate|tojson }}, "steps": [{"id": "request", "label": "Send a legitimate request", "url": {{ legitimate_url|tojson }}, "method": {{ legitimate_method|default('GET')|tojson }}, "fields": {{ legitimate_fields|default({})|tojson }}, "headers": {}, "observations": {{ demo.observations.legitimate|tojson }}, "capture": {}}]}
+  }{% endif %}
+}
+</script>
+{% endblock %}
+
+{% block scripts %}<script src="{{ url_for('static', filename='lab-runner.js') }}" defer></script>{% endblock %}
