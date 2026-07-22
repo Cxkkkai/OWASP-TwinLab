@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="auditor-hero" aria-labelledby="auditor-title">
+  <div>
+    <a class="auditor-back" href="{{ url_for('index') }}">← Security Regression Workbench</a>
+    <p class="kicker">Counterexample-guided verification</p>
+    <h1 id="auditor-title">Security Control Auditor</h1>
+    <p class="lead">A candidate patch can pass its known example and still violate the underlying security invariant. Run the baseline, then let the bounded auditor try to falsify the control against the real TwinShop target.</p>
+  </div>
+  <div class="auditor-scope" aria-label="auditor scope">
+    <div><strong>4</strong><span>Deep contracts</span></div>
+    <div><strong>3</strong><span>Control states</span></div>
+    <div><strong>1</strong><span>Confirmed test per defect</span></div>
+  </div>
+</section>
+
+<section class="auditor-shell" aria-label="security control audit workspace">
+  <aside class="auditor-module-rail">
+    <p class="section-eyebrow">Executable contracts</p>
+    <div class="auditor-module-list" role="tablist" aria-label="Deep module contracts">
+      {% for module_id, contract in auditor_contracts.items() %}
+      <button
+        type="button"
+        role="tab"
+        data-auditor-module="{{ module_id }}"
+        aria-selected="{{ 'true' if loop.first else 'false' }}"
+        class="{{ 'selected' if loop.first else '' }}"
+      >
+        <span>{{ contract.owasp }}</span>
+        <strong>{{ contract.name }}</strong>
+        <small>{{ contract.explorer.kind|capitalize }} explorer</small>
+      </button>
+      {% endfor %}
+    </div>
+    <button class="auditor-run-all secondary" type="button" data-auditor-run-all>Audit all four controls</button>
+    <button class="auditor-download secondary" type="button" data-auditor-download disabled>Download evidence JSON</button>
+  </aside>
+
+  <div class="auditor-main">
+    <header class="auditor-contract-header">
+      <div>
+        <p class="section-eyebrow" data-contract-id>A05:2025 · Grammar explorer</p>
+        <h2 data-contract-title></h2>
+        <p data-contract-invariant></p>
+      </div>
+      <span class="auditor-contract-version">Contract v1</span>
+    </header>
+
+    <div class="auditor-control-strip">
+      <article>
+        <span>Candidate patch</span>
+        <strong data-candidate-name></strong>
+        <p data-candidate-summary></p>
+      </article>
+      <article>
+        <span>Bounded search</span>
+        <strong data-explorer-name></strong>
+        <p data-explorer-dimensions></p>
+      </article>
+      <article>
+        <span>Forbidden observation</span>
+        <strong>Invariant oracle</strong>
+        <p data-oracle-forbidden></p>
+      </article>
+    </div>
+
+    <div class="auditor-actions">
+      <button type="button" data-auditor-baseline>1. Run known baseline</button>
+      <button type="button" data-auditor-audit disabled>2. Audit this control</button>
+      <span class="auditor-run-state" data-auditor-status role="status" aria-live="polite">Select a contract and run its baseline.</span>
+    </div>
+
+    <section class="auditor-attack-story" aria-labelledby="attack-story-title">
+      <div class="auditor-section-heading">
+        <div>
+          <p class="section-eyebrow">Actual attacker execution</p>
+          <h2 id="attack-story-title">Live attack reconstruction</h2>
+        </div>
+        <span data-attack-story-state>Waiting for the known baseline</span>
+      </div>
+
+      <div class="auditor-attack-brief">
+        <article>
+          <span>Attacker objective</span>
+          <strong data-attack-objective></strong>
+        </article>
+        <article>
+          <span>Starting capability</span>
+          <strong data-attack-capability></strong>
+        </article>
+        <article>
+          <span>Baseline → manipulation</span>
+          <strong data-attack-manipulation></strong>
+        </article>
+        <article>
+          <span>Success condition</span>
+          <strong data-attack-success></strong>
+        </article>
+      </div>
+
+      <ol class="auditor-attack-flow" data-attack-flow aria-label="attacker execution steps"></ol>
+
+      <div class="auditor-robust-replay" data-robust-replay hidden>
+        <div>
+          <p class="section-eyebrow">Same confirmed case</p>
+          <h3>Robust replay and business counterexample</h3>
+        </div>
+        <div class="auditor-replay-flow" data-replay-flow></div>
+      </div>
+    </section>
+
+    <section class="auditor-result-grid" aria-label="audit outcome">
+      <article class="auditor-result-card" data-baseline-card>
+        <div class="auditor-card-heading">
+          <span>Known example</span>
+          <strong class="auditor-badge pending" data-baseline-badge>Not run</strong>
+        </div>
+        <h3>Baseline result</h3>
+        <p data-baseline-summary>The candidate has not been tested.</p>
+        <dl data-baseline-evidence></dl>
+      </article>
+
+      <article class="auditor-result-card primary-result" data-counterexample-card>
+        <div class="auditor-card-heading">
+          <span>Adversarial audit</span>
+          <strong class="auditor-badge pending" data-counterexample-badge>Not run</strong>
+        </div>
+        <h3>Confirmed counterexample</h3>
+        <p data-counterexample-summary>No bounded search has run.</p>
+        <div class="counterexample-value" data-counterexample-value hidden></div>
+      </article>
+
+      <article class="auditor-result-card" data-robust-card>
+        <div class="auditor-card-heading">
+          <span>Same counterexample</span>
+          <strong class="auditor-badge pending" data-robust-badge>Not run</strong>
+        </div>
+        <h3>Robust control</h3>
+        <p data-robust-summary>The controlled implementation has not been challenged.</p>
+        <dl data-robust-evidence></dl>
+      </article>
+    </section>
+
+    <section class="auditor-metrics" aria-label="measured audit results">
+      <div><span>Cases executed</span><strong data-metric-cases>—</strong></div>
+      <div><span>Time to counterexample</span><strong data-metric-time>—</strong></div>
+      <div><span>Real replay</span><strong data-metric-replay>—</strong></div>
+      <div><span>Legitimate use</span><strong data-metric-legitimate>—</strong></div>
+    </section>
+
+    <section class="auditor-provenance" aria-labelledby="provenance-title" hidden>
+      <div class="auditor-section-heading">
+        <div>
+          <p class="section-eyebrow">Actual decision events</p>
+          <h2 id="provenance-title">Runtime decision provenance</h2>
+        </div>
+        <span>Generated from the confirmed target response</span>
+      </div>
+      <div class="provenance-flow" data-provenance-flow></div>
+    </section>
+
+    <section class="auditor-case-table" aria-labelledby="case-table-title" hidden>
+      <div class="auditor-section-heading">
+        <div>
+          <p class="section-eyebrow">Differential replay</p>
+          <h2 id="case-table-title">Explored cases</h2>
+        </div>
+        <span data-case-table-caption></span>
+      </div>
+      <div class="auditor-table-shell">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Case</th>
+              <th scope="col">Vulnerable</th>
+              <th scope="col">Candidate</th>
+              <th scope="col">Robust</th>
+              <th scope="col">Oracle</th>
+            </tr>
+          </thead>
+          <tbody data-case-table-body></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="auditor-regression" aria-labelledby="regression-title" hidden>
+      <div class="auditor-section-heading">
+        <div>
+          <p class="section-eyebrow">Secure development loop</p>
+          <h2 id="regression-title">Generated regression test</h2>
+        </div>
+        <button class="secondary" type="button" data-copy-test>Copy test</button>
+      </div>
+      <pre><code data-regression-test></code></pre>
+    </section>
+
+    <details class="auditor-evidence">
+      <summary>Raw bounded evidence and claim boundary</summary>
+      <div>
+        <p data-bounded-claim></p>
+        <pre><code data-raw-evidence>No audit evidence yet.</code></pre>
+      </div>
+    </details>
+
+    <section class="auditor-summary" data-auditor-summary hidden aria-labelledby="auditor-summary-title">
+      <div class="auditor-section-heading">
+        <div>
+          <p class="section-eyebrow">Baseline vs contract-guided audit</p>
+          <h2 id="auditor-summary-title">Four-control mutation result</h2>
+        </div>
+        <strong data-summary-score>—</strong>
+      </div>
+      <div class="auditor-summary-grid">
+        <div><span>Seeded defects</span><strong data-summary-total>—</strong></div>
+        <div><span>Baseline passed</span><strong data-summary-baseline>—</strong></div>
+        <div><span>Auditor detected</span><strong data-summary-detected>—</strong></div>
+        <div><span>Robust controls held</span><strong data-summary-robust>—</strong></div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<script id="auditor-manifest" type="application/json">
+{
+  "initial_actor": {{ (current_actor.username if current_actor else none)|tojson }},
+  "observer_header": "X-TwinLab-Observer",
+  "observer_capability": {{ observer_capability|tojson }},
+  "module_order": ["a05", "a07", "a01", "a02"],
+  "contracts": {{ auditor_contracts|tojson }}
+}
+</script>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='auditor-core.js') }}" defer></script>
+<script src="{{ url_for('static', filename='auditor.js') }}" defer></script>
+{% endblock %}
