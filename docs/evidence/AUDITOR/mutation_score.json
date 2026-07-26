@@ -1,0 +1,16 @@
+{
+  "baseline_passed": 4,
+  "counterexamples_confirmed": 4,
+  "execution": "isolated Flask test client; temporary SQLite; no network",
+  "generated_at": "2026-07-24T02:38:30+10:00",
+  "legitimate_uses_preserved": 4,
+  "module_order": [
+    "a05",
+    "a07",
+    "a01",
+    "a02"
+  ],
+  "mutation_score_percent": 100,
+  "robust_controls_held": 4,
+  "seeded_defects": 4
+}

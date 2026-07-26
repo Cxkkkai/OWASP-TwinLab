@@ -109,8 +109,8 @@ Candidate defects were detected. It is not a production security score.
 ```text
 app/                  Flask application, UI and executable security contracts
 tests/                Python and browser-logic regression tests
-scripts/              Synthetic database reset command
-docs/                 Threat model, specifications and safety notes
+scripts/              Evidence generator and synthetic database reset command
+docs/                 Specifications, safety notes and selected evidence
 requirements.lock     Frozen Python dependencies
 run.py                Loopback-only development runner
 compose.yaml          Optional loopback-only container route
@@ -121,6 +121,7 @@ Useful technical documents:
 - [Module specifications](docs/MODULE_SPECIFICATIONS.md)
 - [Auditor specification](docs/AUDITOR_SPECIFICATION.md)
 - [Threat model](docs/THREAT_MODEL.md)
+- [Selected execution evidence](docs/evidence/README.md)
 
 ## Claim boundary
 

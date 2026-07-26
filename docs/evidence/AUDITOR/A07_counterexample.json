@@ -1,0 +1,95 @@
+{
+  "actual_replay_confirmed": true,
+  "baseline_passed": true,
+  "bounded_claim": "The explorer covers the displayed lifecycle actions to depth three. It does not prove token theft prevention, fixation defence or distributed-session correctness.",
+  "case_results": [
+    {
+      "candidate": {
+        "http": 401,
+        "violation": false
+      },
+      "input": "logout",
+      "oracle_violation": false,
+      "robust": {
+        "http": 401,
+        "violation": false
+      },
+      "sequence": [
+        "login",
+        "logout",
+        "Admin access"
+      ],
+      "vulnerable": {
+        "http": 200,
+        "violation": false
+      }
+    },
+    {
+      "candidate": {
+        "http": 200,
+        "violation": true
+      },
+      "input": "expire",
+      "oracle_violation": true,
+      "robust": {
+        "http": 401,
+        "violation": false
+      },
+      "sequence": [
+        "login",
+        "expire",
+        "Admin access"
+      ],
+      "vulnerable": {
+        "http": 401,
+        "violation": false
+      }
+    }
+  ],
+  "cases_executed": 2,
+  "counterexample": {
+    "authoritative_state": {
+      "active": true,
+      "expired": true,
+      "found": true,
+      "token_fingerprint": "7265d19e143f"
+    },
+    "candidate_http": 200,
+    "expiry_checked": false,
+    "input": "expire",
+    "minimisation": "shortest violating sequence in the depth-three action model",
+    "sequence": [
+      "login",
+      "expire",
+      "Admin access"
+    ]
+  },
+  "counterexample_found": true,
+  "elapsed_ms": 933,
+  "legitimate_use_preserved": true,
+  "module_id": "a07",
+  "provenance": [
+    {
+      "decision": "matching active session row found",
+      "label": "Authoritative session lookup",
+      "stage": "lookup"
+    },
+    {
+      "decision": "candidate omitted expiry check",
+      "label": "Expiry decision",
+      "stage": "lifecycle"
+    },
+    {
+      "decision": "Admin role accepted",
+      "label": "Role decision",
+      "stage": "authorization"
+    },
+    {
+      "decision": "Admin data returned despite expired session",
+      "label": "Privileged response",
+      "stage": "boundary"
+    }
+  ],
+  "robust_control_holds": true,
+  "time_to_counterexample_ms": 800
+}

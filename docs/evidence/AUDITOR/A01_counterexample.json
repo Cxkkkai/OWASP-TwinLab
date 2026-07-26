@@ -1,0 +1,95 @@
+{
+  "actual_replay_confirmed": true,
+  "baseline_passed": true,
+  "bounded_claim": "The matrix covers the displayed synthetic identities, principal sources and two orders. It does not establish application-wide authorisation correctness.",
+  "case_results": [
+    {
+      "candidate": {
+        "http": 404,
+        "violation": false
+      },
+      "input": "none",
+      "oracle_violation": false,
+      "request_actor": null,
+      "robust": {
+        "http": 404,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "http": 200,
+        "violation": true
+      },
+      "input": "X-TwinLab-Actor: bob",
+      "oracle_violation": true,
+      "request_actor": "bob",
+      "robust": {
+        "http": 404,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "http": 200,
+        "violation": true
+      },
+      "input": "actor=bob",
+      "oracle_violation": true,
+      "request_actor": "bob",
+      "robust": {
+        "http": 404,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    }
+  ],
+  "cases_executed": 3,
+  "counterexample": {
+    "candidate_http": 200,
+    "input": "actor=bob",
+    "minimisation": "smallest principal-source manipulation in the policy matrix",
+    "request_actor": "bob",
+    "returned_owner": "bob",
+    "signed_session": "alice"
+  },
+  "counterexample_found": true,
+  "elapsed_ms": 3,
+  "legitimate_use_preserved": true,
+  "module_id": "a01",
+  "provenance": [
+    {
+      "decision": "alice",
+      "label": "Signed-session principal",
+      "stage": "identity"
+    },
+    {
+      "decision": "bob from caller-controlled request override",
+      "label": "Principal selected for owner predicate",
+      "stage": "candidate-control"
+    },
+    {
+      "decision": "orders.id = requested id AND owner_id = selected principal",
+      "label": "Owner-scoped query",
+      "stage": "policy"
+    },
+    {
+      "decision": "bob's order returned to signed-session actor alice",
+      "label": "Customer response",
+      "stage": "boundary"
+    }
+  ],
+  "robust_control_holds": true,
+  "time_to_counterexample_ms": 2
+}

@@ -1,0 +1,167 @@
+{
+  "actual_replay_confirmed": true,
+  "baseline_passed": true,
+  "bounded_claim": "The scanner covers the displayed controlled error cases and HTTP response channels. It does not inspect framework or infrastructure paths outside this synthetic app.",
+  "case_results": [
+    {
+      "candidate": {
+        "hits": [
+          {
+            "canary": "/synthetic/twinshop/orders.py",
+            "channel": "header:x-twinlab-debug-path"
+          },
+          {
+            "canary": "DEMO_ONLY_CONFIG_A02",
+            "channel": "header:x-twinlab-debug-config"
+          }
+        ],
+        "http": 500,
+        "violation": true
+      },
+      "input": "explode",
+      "oracle_violation": true,
+      "robust": {
+        "http": 500,
+        "violation": false
+      },
+      "vulnerable": {
+        "hits": [
+          {
+            "canary": "/synthetic/twinshop/orders.py",
+            "channel": "body"
+          },
+          {
+            "canary": "DEMO_ONLY_CONFIG_A02",
+            "channel": "body"
+          }
+        ],
+        "http": 500,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "hits": [
+          {
+            "canary": "/synthetic/twinshop/orders.py",
+            "channel": "header:x-twinlab-debug-path"
+          },
+          {
+            "canary": "DEMO_ONLY_CONFIG_A02",
+            "channel": "header:x-twinlab-debug-config"
+          }
+        ],
+        "http": 500,
+        "violation": true
+      },
+      "input": "not-a-number",
+      "oracle_violation": true,
+      "robust": {
+        "http": 500,
+        "violation": false
+      },
+      "vulnerable": {
+        "hits": [
+          {
+            "canary": "/synthetic/twinshop/orders.py",
+            "channel": "body"
+          },
+          {
+            "canary": "DEMO_ONLY_CONFIG_A02",
+            "channel": "body"
+          }
+        ],
+        "http": 500,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "hits": [
+          {
+            "canary": "/synthetic/twinshop/orders.py",
+            "channel": "header:x-twinlab-debug-path"
+          },
+          {
+            "canary": "DEMO_ONLY_CONFIG_A02",
+            "channel": "header:x-twinlab-debug-config"
+          }
+        ],
+        "http": 500,
+        "violation": true
+      },
+      "input": "handler-failure",
+      "oracle_violation": true,
+      "robust": {
+        "http": 500,
+        "violation": false
+      },
+      "vulnerable": {
+        "hits": [
+          {
+            "canary": "/synthetic/twinshop/orders.py",
+            "channel": "body"
+          },
+          {
+            "canary": "DEMO_ONLY_CONFIG_A02",
+            "channel": "body"
+          }
+        ],
+        "http": 500,
+        "violation": true
+      }
+    }
+  ],
+  "cases_executed": 3,
+  "correlated_event": {
+    "found": true,
+    "minimised": true,
+    "stored_detail_keys": [
+      "error_class",
+      "route"
+    ]
+  },
+  "counterexample": {
+    "candidate_http": 500,
+    "channels": [
+      {
+        "canary": "/synthetic/twinshop/orders.py",
+        "channel": "header:x-twinlab-debug-path"
+      },
+      {
+        "canary": "DEMO_ONLY_CONFIG_A02",
+        "channel": "header:x-twinlab-debug-config"
+      }
+    ],
+    "input": "explode",
+    "minimisation": "shortest controlled failure with a client-visible canary"
+  },
+  "counterexample_found": true,
+  "elapsed_ms": 8,
+  "legitimate_use_preserved": true,
+  "module_id": "a02",
+  "provenance": [
+    {
+      "decision": "lookup-runtime",
+      "label": "Controlled application failure",
+      "stage": "exception"
+    },
+    {
+      "decision": "generic error and correlation ID only",
+      "label": "Client response body",
+      "stage": "body-policy"
+    },
+    {
+      "decision": "candidate middleware adds diagnostic canaries",
+      "label": "Client response headers",
+      "stage": "header-policy"
+    },
+    {
+      "decision": "minimised correlated event retained",
+      "label": "Server-side event",
+      "stage": "operator-path"
+    }
+  ],
+  "robust_control_holds": true,
+  "time_to_counterexample_ms": 2
+}

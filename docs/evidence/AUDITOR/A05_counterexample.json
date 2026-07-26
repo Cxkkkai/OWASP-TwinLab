@@ -1,0 +1,523 @@
+{
+  "actual_replay_confirmed": true,
+  "authoritative_state": {
+    "checksum_after": "96a06c7dc7d4f7c1",
+    "checksum_before": "96a06c7dc7d4f7c1",
+    "unchanged": true
+  },
+  "baseline_passed": true,
+  "bounded_claim": "The result covers the displayed read-only SQLite grammar corpus. No counterexample result is a proof that every query in another application is safe.",
+  "case_results": [
+    {
+      "candidate": {
+        "blocked": true,
+        "http": 400,
+        "violation": false
+      },
+      "input": "%' OR 1=1 --",
+      "oracle_violation": false,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": false,
+        "http": 200,
+        "violation": true
+      },
+      "input": "%' oR 1=1 /*",
+      "oracle_violation": true,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": true,
+        "http": 400,
+        "violation": false
+      },
+      "input": "%' oR 1=1 --",
+      "oracle_violation": false,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": false,
+        "http": 200,
+        "violation": true
+      },
+      "input": "%' oR 2>1 /*",
+      "oracle_violation": true,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": true,
+        "http": 400,
+        "violation": false
+      },
+      "input": "%' oR 2>1 --",
+      "oracle_violation": false,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": false,
+        "http": 200,
+        "violation": true
+      },
+      "input": "%' oR/**/1=1 /*",
+      "oracle_violation": true,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": true,
+        "http": 400,
+        "violation": false
+      },
+      "input": "%' oR/**/1=1 --",
+      "oracle_violation": false,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": false,
+        "http": 200,
+        "violation": true
+      },
+      "input": "%' oR/**/2>1 /*",
+      "oracle_violation": true,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": true,
+        "http": 400,
+        "violation": false
+      },
+      "input": "%' oR/**/2>1 --",
+      "oracle_violation": false,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": false,
+        "http": 200,
+        "violation": true
+      },
+      "input": "%' Or 1=1 /*",
+      "oracle_violation": true,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": true,
+        "http": 400,
+        "violation": false
+      },
+      "input": "%' Or 1=1 --",
+      "oracle_violation": false,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": false,
+        "http": 200,
+        "violation": true
+      },
+      "input": "%' Or 2>1 /*",
+      "oracle_violation": true,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": true,
+        "http": 400,
+        "violation": false
+      },
+      "input": "%' Or 2>1 --",
+      "oracle_violation": false,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": false,
+        "http": 200,
+        "violation": true
+      },
+      "input": "%' Or/**/1=1 /*",
+      "oracle_violation": true,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": true,
+        "http": 400,
+        "violation": false
+      },
+      "input": "%' Or/**/1=1 --",
+      "oracle_violation": false,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": false,
+        "http": 200,
+        "violation": true
+      },
+      "input": "%' Or/**/2>1 /*",
+      "oracle_violation": true,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": true,
+        "http": 400,
+        "violation": false
+      },
+      "input": "%' Or/**/2>1 --",
+      "oracle_violation": false,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": false,
+        "http": 200,
+        "violation": true
+      },
+      "input": "%' or 1=1 /*",
+      "oracle_violation": true,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": true,
+        "http": 400,
+        "violation": false
+      },
+      "input": "%' or 1=1 --",
+      "oracle_violation": false,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": false,
+        "http": 200,
+        "violation": true
+      },
+      "input": "%' or 2>1 /*",
+      "oracle_violation": true,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": true,
+        "http": 400,
+        "violation": false
+      },
+      "input": "%' or 2>1 --",
+      "oracle_violation": false,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": false,
+        "http": 200,
+        "violation": true
+      },
+      "input": "%' or/**/1=1 /*",
+      "oracle_violation": true,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": true,
+        "http": 400,
+        "violation": false
+      },
+      "input": "%' or/**/1=1 --",
+      "oracle_violation": false,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": false,
+        "http": 200,
+        "violation": true
+      },
+      "input": "%' or/**/2>1 /*",
+      "oracle_violation": true,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": true,
+        "http": 400,
+        "violation": false
+      },
+      "input": "%' or/**/2>1 --",
+      "oracle_violation": false,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": false,
+        "http": 200,
+        "violation": true
+      },
+      "input": "%'/**/oR 1=1/**//*",
+      "oracle_violation": true,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": true,
+        "http": 400,
+        "violation": false
+      },
+      "input": "%'/**/oR 1=1/**/--",
+      "oracle_violation": false,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    },
+    {
+      "candidate": {
+        "blocked": false,
+        "http": 200,
+        "violation": true
+      },
+      "input": "%'/**/oR 2>1/**//*",
+      "oracle_violation": true,
+      "robust": {
+        "http": 200,
+        "violation": false
+      },
+      "vulnerable": {
+        "http": 200,
+        "violation": true
+      }
+    }
+  ],
+  "cases_executed": 28,
+  "counterexample": {
+    "candidate_http": 200,
+    "hidden_product_returned": true,
+    "input": "%' oR 1=1 /*",
+    "minimisation": "shortest confirmed input in the bounded corpus"
+  },
+  "counterexample_found": true,
+  "elapsed_ms": 24,
+  "legitimate_use_preserved": true,
+  "module_id": "a05",
+  "provenance": [
+    {
+      "decision": "accepted as application input",
+      "label": "Untrusted search query",
+      "stage": "source"
+    },
+    {
+      "decision": "allowed because exact blocked tokens were absent",
+      "label": "Case-sensitive blacklist",
+      "stage": "candidate-control"
+    },
+    {
+      "decision": "allowed input still entered SQL control structure",
+      "label": "SQL construction",
+      "stage": "construction"
+    },
+    {
+      "decision": "hidden catalogue row returned",
+      "label": "Public response",
+      "stage": "boundary"
+    }
+  ],
+  "robust_control_holds": true,
+  "time_to_counterexample_ms": 2
+}
